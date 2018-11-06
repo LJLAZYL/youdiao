@@ -5,11 +5,22 @@ use think\Controller;
 use app\common\validate\AdminUser;
 use app\common\lib\IAuth;
 
-class Login extends Controller
+class Login extends Base
 {
+    public function _initialize()
+    {
+
+    }
+
     public function index()
     {
-        return $this->fetch();
+        //如果后台用户已经登陆，那么我们需跳到后台页面
+        $isLogin = $this->isLogin();
+        if($isLogin){
+            return $this->redirect('index/index');
+        }else{
+            return $this->fetch();
+        }
     }
 
     //登陆相关业务
@@ -60,7 +71,14 @@ class Login extends Controller
         }else{
             $this->error('请求不合法');
         }
+    }
 
+    //退出业务逻辑：1、清空session 2、跳转到登陆页
+    public function logout(){
+
+        session(null,config('admin.session_user_scope'));
+        //跳转
+        $this->redirect('login/index');
     }
 
 }
